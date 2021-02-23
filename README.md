@@ -1,2 +1,2 @@
-# MallAPIConnector
-Custom implementation of MPAPI connector
+# MallAPIToolkit
+Custom implementation of MPAPI toolkit used for communication between E-shop & Mall.cz
