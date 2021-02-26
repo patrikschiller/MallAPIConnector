@@ -1,36 +1,50 @@
-  <?php
+<?php
+abstract class HTTP_Method{
+    const GET = 0;      // Read
+    const POST = 1;     // Create
+    const PUT = 2;      // Update
+    const DELETE = 3;   // Delete
+}
+
 class RESTApi{
+    //public HTTP_Method $METHOD;
     private $curl;
 
     function __construct(){
-        //$curl = curl_init();
+        $curl = curl_init();
     }
 
+    /**
+     * @summary - Makes HTTP Request on API endpoint (url) using given method, with given data
+     * @param method {HTTP_Method} - HTTP method used for given request
+     * @param url - API endpoint url
+     * @param paramData - assoc. array with request data
+     */
     function apiCall($method, $url, $paramData){
         $this->curl = curl_init();
         $result = null;//{"code" => null, "responseData" => null};
 
         curl_setopt($this->curl, CURLOPT_URL, $url);
 
-        echo "<br>".$url;
+        echo "<br> [Debug: ]".$url."<br/>";
 
         switch($method){
-            case "GET":
+            case HTTP_Method::GET:
                 {
                     $result = $this->get($paramData);
                 break;
                 }
-            case "SET": // = PUT
+            case HTTP_Method::POST:
                 {
                     $result = $this->set($paramData);
                 break;
                 }
-            case "UPDATE":
+            case HTTP_Method::PUT:
                 {
                     $result = $this->update($paramData);
                 break;
                 }
-            case "DELETE":
+            case HTTP_Method::DELETE:
                 {
                     $result = $this->delete($paramData);
                 break;
@@ -42,28 +56,48 @@ class RESTApi{
         return $result;
     }
 
-    function get($params){
+    /**
+     * Read (GET)
+     * @param params - Request body data
+     */
+    private function get($params){
         //curl_setopt($this->curl, CURLOPT_GET, 1);
-        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'GET');
+        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'GET'); // Default req
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         $response =  curl_exec($this->curl);
+
         return json_decode($response);
-        // method GET
     }
 
-    function set($params){
-        curl_setopt($this->curl, CURLOPT_PUT, 1);
-        // PUT
+    /**
+     * Create (POST)
+     * @param params - Request body data
+     */
+    private function set($params){
+        //curl_setopt($this->curl, CURLOPT_POST, 1);
+        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
+
     }
 
-    function update($params){
-        curl_setopt($this->curl, CURLOPT_UPDATE, true);
-        // UPDATE
+    /**
+     * Update (PUT)
+     * @param params - Request body data
+     */
+    private function update($params){
+       // curl_setopt($this->curl, CURLOPT_PUT, true);
+       curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'PUT');
+
     }
 
-    function delete($params){
-        curl_setopt($this->curl, CURLOPT_DELETE, 1);
-        // DELETE
+    /**
+     * Delete (DELETE)
+     * @param params - Request body data
+     */
+    private function delete($params){
+        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        $response =  curl_exec($this->curl);
+
+        return json_decode($response);
     }
 }
 ?>

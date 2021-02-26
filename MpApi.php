@@ -2,6 +2,11 @@
 include 'RESTApi.php';
 include '_Private.php';
 
+/**
+ * @summary - Mall API implementation root
+ *          - extends general RestAPI implementation
+ * @todo - Work In Progress
+ */
 class MPApi extends RESTApi{
     //hint: https://knowledgebase.mallgroup.com/marketplace-api/
     //https://marketplaceapiv2.docs.apiary.io/#reference/orders
@@ -27,7 +32,7 @@ class MPApi extends RESTApi{
     }
 
     /**
-     * @param method - type of HTTP method {GET/POST/PUT/DELETE}
+     * @param method {HTTP_Method} - type of HTTP method {GET/POST/PUT/DELETE}
      * @param endpoint - API endpoint (after 'url.com/v1')
      * @param params - array of URL parameters
      *          - should contain element 'url_params', which represents url params substring, 
@@ -35,7 +40,7 @@ class MPApi extends RESTApi{
      * @return {Array}
      */
     public function callMallAPI($method, $endpoint, $params){
-        $url = $this->baseUrl."/".$this->apiProxy."/".$endpoint."?client_id=".$this->authKey."&".$params['url_params'];
+        $url = $this->baseUrl."/".$this->apiProxy."".$endpoint."?client_id=".$this->authKey."&".$params['url_params'];
         $json_params = array();
         $response = parent::apiCall($method, $url, $json_params);
 
@@ -45,8 +50,6 @@ class MPApi extends RESTApi{
         }else{
             $response_code = $response->result->code;
         }
-
-        var_dump($response);
 
         echo "<br> Response code: ".$response_code."<br/>";
 
