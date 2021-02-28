@@ -29,6 +29,7 @@ class MPApi extends RESTApi{
             $this->authKey = "";
         }
         parent::__construct();
+        $this->Log = new RestApiLog("MpAPI");
     }
 
     /**
@@ -42,7 +43,7 @@ class MPApi extends RESTApi{
     public function callMallAPI($method, $endpoint, $params){
         $url = $this->baseUrl."/".$this->apiProxy."".$endpoint."?client_id=".$this->authKey."&".$params['url_params'];
         $json_params = array();
-        $response = parent::apiCall($method, $url, $json_params);
+        $response = parent::apiCall($method, $url, $params);
 
         $response_code = "";
         if(isset($response->errorCodes)){

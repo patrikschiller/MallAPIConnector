@@ -32,6 +32,7 @@ abstract class OrderStatus{
  */
 class MallOrder{
     private $endpointBase = "/orders";
+    private $moduleName = "ORDERS";
     private $MPAPI;
 
     public function __construct($test = true){
@@ -91,6 +92,8 @@ class MallOrder{
                     $endpoint .= "/". $status;
                 }else{
                     // LOG: Status with id $orderStatus doesn't exist
+                    $message = "Status ".$orderStatus." was not recognized!";
+                    $this->MPAPI->Log->push(MessageType::ERROR, $this->moduleName, $message);
                 }
         }
 
@@ -125,7 +128,7 @@ class MallOrder{
         $endpoint = $this->endpointBase."/".$order['id'];
         $params = array('url_params' => "");
 
-        return $this->MPAPI->callMallAPI(HTTP_Method::PUT, $endpoint, $params);
+        return $this->MPAPI->callMallAPI(HTTP_Method::PUT, $endpoint, $order);
     }
 
     /**
@@ -141,11 +144,13 @@ class MallOrder{
             $order['confirmed'] = true;
             $this->updateOrderDetail($order);
         }else{
-            // LOG: order already confirmed!
+            $message = "Order ".$order['id']." was already confirmed. Aborting request!";
+            $this->MPAPI->Log->push(MessageType::WARNING, $this->moduleName, $message);
         }
     }
 
     /**
+     * @todo TODO
      * @summary - Updates status of given order (if it is allowed)
      * @param order - Order object
      * @param newStatus {OrderStatus} - integer rep. of given status (from DB etc.), must satisfy mapping given by OrderStatus enumeration
@@ -193,15 +198,22 @@ class MallOrder{
                         // LOG: No other action is allowed!
                 }
                 break;
+            default:
+                $message = "Status ".$order['status']." was not recognized!";
+                $this->MPAPI->Log->push(MessageType::ERROR, $this->moduleName, $message);
+                return false;
         }
 
+        /* Update order */
         if($actionAllowed){
             $this->updateOrderDetail($order);
-        }else{
-            // LOG: Action is not allowed
+            return true;
         }
+
+        $message = "Status '".OrderStatus::Translate[$order['status']]."' can't be changed to '".OrderStatus::Translate[$newStatus]."'";
+        $this->MPAPI->Log->push(MessageType::ERROR, $this->moduleName, $message);
+
+        return false;
     }
 }
-
-
 ?>

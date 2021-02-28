@@ -1,4 +1,6 @@
 <?php
+include 'RESTApiLog.php';
+
 abstract class HTTP_Method{
     const GET = 0;      // Read
     const POST = 1;     // Create
@@ -9,6 +11,8 @@ abstract class HTTP_Method{
 class RESTApi{
     //public HTTP_Method $METHOD;
     private $curl;
+
+    public $Log;
 
     function __construct(){
         $curl = curl_init();
@@ -84,9 +88,13 @@ class RESTApi{
      * @param params - Request body data
      */
     private function update($params){
-       // curl_setopt($this->curl, CURLOPT_PUT, true);
+       $jsonEncoded = json_encode($params);
        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'PUT');
+       curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
+       curl_setopt($this->curl, CURLOPT_POSTFIELDS, $jsonEncoded);
+       $response =  curl_exec($this->curl);
 
+       return json_decode($response);
     }
 
     /**
